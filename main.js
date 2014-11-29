@@ -32,6 +32,9 @@ var main = {
       this.tileToPixels(1), 
       'player');
 
+    this.player.gridx = 1;
+    this.player.gridy = 1;
+
     console.log("Created player at: " + this.player.x + ", " + this.player.y);
 
     // Create the goal 
@@ -51,6 +54,8 @@ var main = {
       this.player.x,
       this.player.y
     );
+
+
 
     this.player.isMoving = false;
 
@@ -153,7 +158,7 @@ var main = {
       this.player.body.velocity.y = 0;
       this.player.body.y = this.player.waypoint.y;
       this.player.isMoving = false;
-      //console.log("reached destination y");
+      console.log("reached destination y");
     };
 
 
@@ -181,15 +186,26 @@ var main = {
 
     this.player.isMoving = true;
 
+    this.player.gridx += tilex;
+    this.player.gridy += tiley;
+
+
+    this.player.gridx = Phaser.Math.clamp(this.player.gridx, 0, this.tilesWide);
+    this.player.gridy = Phaser.Math.clamp(this.player.gridy, 0, this.tilesHigh);
+
+
     var waypoint = new Phaser.Point(
-      this.tileToPixels(tilex) + this.player.x,
-      this.tileToPixels(tiley) + this.player.y
+      this.tileToPixels(this.player.gridx),
+      this.tileToPixels(this.player.gridy)
     );
 
     this.player.waypoint = waypoint;
     
-    console.log("moving to:");
+    console.log("moving to waypoint:");
     console.log("x: " + waypoint.x + "  y: " + waypoint.y);
+
+    console.log("target player grid position:");
+    console.log("x: " + this.player.gridx + "  y: " + this.player.gridy);
 
     return;
 
