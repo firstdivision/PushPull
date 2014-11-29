@@ -35,7 +35,15 @@ var main = {
       this.tileToPixels(7), 
       this.tileToPixels(1),
       'goal');
-    
+
+    // Enable the physics system for the goal
+    game.physics.arcade.enable(this.goal);
+
+    this.goal.body.moves = false;
+
+    //make the player not able to go off screen
+    this.goal.body.collideWorldBounds = true;
+
     // Create the player
     this.player = game.add.sprite(
       this.tileToPixels(1), 
@@ -99,9 +107,29 @@ var main = {
 
     //detect player touching targets
     game.physics.arcade.collide(this.player, this.targets, this.hit, null, this);
+
+    //detect player moved box into goal area
+    game.physics.arcade.overlap(this.goal, this.targets, this.overlapped, null, this);
   },
 
   render: function(){
+
+  },
+
+  overlapped: function(goal, target){
+    target.kill();
+
+    this.winText = this.add.text(
+    this.world.centerX,
+    this.world.height/5,
+    "You won!",
+    {
+        size: "32px",
+        fill: "#FFF",
+        align: "center"
+    }
+);
+
 
   },
 
