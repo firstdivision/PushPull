@@ -4,6 +4,7 @@ var main = {
   tileSize: 32,
   tilesWide: 10,
   tilesHigh: 10,
+  playerSpeed: 60,
 
 
   preload: function() {
@@ -27,14 +28,16 @@ var main = {
 
     // Create the player
     this.player = game.add.sprite(
-      this.boardGrid(1), 
-      this.boardGrid(1), 
+      this.tileToPixels(1), 
+      this.tileToPixels(1), 
       'player');
+
+    console.log("Created player at: " + this.player.x + ", " + this.player.y);
 
     // Create the goal 
     this.goal = game.add.sprite(
-      this.boardGrid(7), 
-      this.boardGrid(1),
+      this.tileToPixels(7), 
+      this.tileToPixels(1),
       'goal');
 
     // Enable the physics system for the player
@@ -44,6 +47,11 @@ var main = {
     this.player.body.collideWorldBounds = true;
 
     //set/create this property
+    this.player.waypoint = new Phaser.Point(
+      this.player.x,
+      this.player.y
+    );
+
     this.player.isMoving = false;
 
     // Create a group that will contain all the targets
@@ -57,8 +65,8 @@ var main = {
 
     //create a single target
     game.add.sprite(
-      this.boardGrid(4), 
-      this.boardGrid(1), 
+      this.tileToPixels(4), 
+      this.tileToPixels(1), 
       'target', 0, this.targets);
 
     // Make sure that the targets won't move
@@ -102,12 +110,53 @@ var main = {
 
     //detect player touching bricks
     game.physics.arcade.collide(this.player, this.targets, this.hit, null, this);
-
-    //bricks bounch of each other
-    game.physics.arcade.collide(this.bricks, this.targets, null, null, this);
   },
 
   render: function(){
+    //console.log("Player   X: " + this.player.x + " Y: " + this.player.y);
+    //console.log("Waypoint X: " + this.player.waypoint.x + " Y: " + this.player.waypoint.y);
+
+    //waypoint is LEFT
+    if (this.player.waypoint.x < this.player.x) { 
+      this.player.body.velocity.x = -this.playerSpeed;
+      this.player.isMoving = true;
+    };
+
+    //waypoint is RIGHT
+    if (this.player.waypoint.x > this.player.x) { 
+      this.player.body.velocity.x = this.playerSpeed;
+      this.player.isMoving = true;
+    };
+
+    //at X waypoint
+    if (Math.abs(this.player.waypoint.x - this.player.x) <= 3) { 
+      this.player.body.velocity.x = 0;
+      this.player.body.x = this.player.waypoint.x;
+      this.player.isMoving = false;
+      //console.log("reached destination x");
+    };
+
+    //waypoint is UP
+    if (this.player.waypoint.y < this.player.y) { 
+      this.player.body.velocity.y = -this.playerSpeed;
+      this.player.isMoving = true;
+    };
+
+    //waypoint is DOWN
+    if (this.player.waypoint.y > this.player.y) { 
+      this.player.body.velocity.y = this.playerSpeed;
+      this.player.isMoving = true;
+    };
+
+    //AT Y waypoint
+    if (Math.abs(this.player.waypoint.y - this.player.y) <= 3) { 
+      this.player.body.velocity.y = 0;
+      this.player.body.y = this.player.waypoint.y;
+      this.player.isMoving = false;
+      //console.log("reached destination y");
+    };
+
+
   },
 
   hit: function(player, target) {
@@ -118,15 +167,33 @@ var main = {
     //update the score, etc..
   },
 
-  boardGrid: function(tile)
+  tileToPixels: function(tile)
   {
-    return tile * this.tileSize;
+    tile = parseInt(tile);
+    return parseInt(tile * this.tileSize);
   },
 
-  movePlayer: function(x, y){
+  movePlayer: function(tilex, tiley){
     // Because we're adding 32 to the player's position, we need to prevent cases where the user tries to move
     // the player mid-move, knocking it off the grid. This is a crude way to do it but it works.
+    
     if (this.player.isMoving) { return; }
+
+    this.player.isMoving = true;
+
+    var waypoint = new Phaser.Point(
+      this.tileToPixels(tilex) + this.player.x,
+      this.tileToPixels(tiley) + this.player.y
+    );
+
+    this.player.waypoint = waypoint;
+    
+    console.log("moving to:");
+    console.log("x: " + waypoint.x + "  y: " + waypoint.y);
+
+    return;
+
+    
     
     this.player.isMoving = true;
     
