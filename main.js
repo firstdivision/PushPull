@@ -1,5 +1,11 @@
 // Define our main state
 var main = {
+
+  tileSize: 32,
+  tilesWide: 20,
+  tilesHigh: 20,
+
+
   preload: function() {
     // This function will be executed at the beginning     
     // That's where we load the game's assets  
@@ -27,18 +33,28 @@ var main = {
     //make the player not able to go off screen
     this.player.body.collideWorldBounds = true;
 
+    //set/create this property
+    this.player.isMoving = false;
+
     // Create a group that will contain all the bricks
     this.bricks = game.add.group();
     this.bricks.enableBody = true;
 
-    // Create the 16 bricks
-    for (var i = 0; i < 5; i++)
-      for (var j = 0; j < 5; j++)
-        game.add.sprite(80+i*60, 55+j*35, 'brick', 0, this.bricks);
+    // Create 16 bricks
+    //for (var i = 0; i < 5; i++)
+    //  for (var j = 0; j < 5; j++)
+    //    game.add.sprite(0 + (i * 60), 0 + (j * 35), 'brick', 0, this.bricks);
+
+    //create a single brick
+    game.add.sprite(
+      this.tileSize * this.tilesWide / 2, 
+      this.tileSize * this.tilesHigh / 2, 
+      'brick', 0, this.bricks);
 
     // Make sure that the bricks won't move
     //this.bricks.setAll('body.immovable', true);
     this.bricks.setAll('body.collideWorldBounds', true);
+
 
   },
 
@@ -50,17 +66,22 @@ var main = {
     var speed = 200;
 
     if (this.cursor.right.isDown) 
-      this.player.body.velocity.x = speed;
+      //this.player.body.velocity.x = speed;
+      this.movePlayer(1, 0);
 
     // If the left arrow if pressed, move left
     else if (this.cursor.left.isDown) 
-      this.player.body.velocity.x = -speed;
+      //this.player.body.velocity.x = -speed;
+      this.movePlayer(-1, 0);
 
     else if (this.cursor.up.isDown)
-      this.player.body.velocity.y = -speed;
+      //this.player.body.velocity.y = -speed;
+      this.movePlayer(0, -1);
 
     else if(this.cursor.down.isDown)
-      this.player.body.velocity.y = speed;
+      //this.player.body.velocity.y = speed;
+      this.movePlayer(0, 1);
+    
     // If no arrow is pressed, stop moving
     else 
     {
@@ -76,17 +97,48 @@ var main = {
     game.physics.arcade.collide(this.bricks, this.bricks, null, null, this);
   },
 
+  render: function(){
+  },
+
   hit: function(player, brick) {
     // When the player hits a brick, kill the brick
     //
     //brick.kill();
 
     //update the score, etc..
-}
+  },
+
+  movePlayer: function(x, y){
+    // Because we're adding 32 to the player's position, we need to prevent cases where the user tries to move
+    // the player mid-move, knocking it off the grid. This is a crude way to do it but it works.
+    if (this.player.isMoving) { return; }
+    
+    this.player.isMoving = true;
+    
+    // Tween the player to the next grid space over 250ms, and when done, allow the player to make another move
+    game.add
+      .tween(this.player)
+      .to(
+        {
+          x: this.player.x + x * this.tileSize, 
+          y: this.player.y + y * this.tileSize
+        }, 
+        250, 
+        Phaser.Easing.Quadratic.InOut, 
+        true
+        )
+      .onComplete.add(function(){ 
+       this.player.isMoving = false;
+      }
+      , this);
+  }
 
 };
 
 // Initialize Phaser, and start our 'main' state 
-var game = new Phaser.Game(450, 450, Phaser.AUTO, 'gameDiv');
+var game = new Phaser.Game(640, 640, Phaser.AUTO, 'gameDiv');
 game.state.add('main', main);
 game.state.start('main');
+
+
+
