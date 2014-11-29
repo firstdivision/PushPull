@@ -37,7 +37,8 @@ var main = {
         game.add.sprite(80+i*60, 55+j*35, 'brick', 0, this.bricks);
 
     // Make sure that the bricks won't move
-    this.bricks.setAll('body.immovable', true);
+    //this.bricks.setAll('body.immovable', true);
+    this.bricks.setAll('body.collideWorldBounds', true);
 
   },
 
@@ -46,18 +47,20 @@ var main = {
     // It contains the game's logic 
 
     // If the right arrow is pressed, move the player to the right
+    var speed = 200;
+
     if (this.cursor.right.isDown) 
-      this.player.body.velocity.x = 350;
+      this.player.body.velocity.x = speed;
 
     // If the left arrow if pressed, move left
     else if (this.cursor.left.isDown) 
-      this.player.body.velocity.x = -350;
+      this.player.body.velocity.x = -speed;
 
     else if (this.cursor.up.isDown)
-      this.player.body.velocity.y = -350;
+      this.player.body.velocity.y = -speed;
 
     else if(this.cursor.down.isDown)
-      this.player.body.velocity.y = 350;
+      this.player.body.velocity.y = speed;
     // If no arrow is pressed, stop moving
     else 
     {
@@ -69,11 +72,16 @@ var main = {
     //detect player touching bricks
     game.physics.arcade.collide(this.player, this.bricks, this.hit, null, this);
 
+    //bricks bounch of each other
+    game.physics.arcade.collide(this.bricks, this.bricks, null, null, this);
   },
 
   hit: function(player, brick) {
-    // When the ball hits a brick, kill the brick
-    brick.kill();
+    // When the player hits a brick, kill the brick
+    //
+    //brick.kill();
+
+    //update the score, etc..
 }
 
 };
