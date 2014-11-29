@@ -2,8 +2,8 @@
 var main = {
 
   tileSize: 32,
-  tilesWide: 20,
-  tilesHigh: 20,
+  tilesWide: 10,
+  tilesHigh: 10,
 
 
   preload: function() {
@@ -11,7 +11,7 @@ var main = {
     // That's where we load the game's assets  
 
     game.load.image('player', 'assets/player.png');
-    game.load.image('brick', 'assets/brick.png');
+    game.load.image('target', 'assets/target.png');
 
   },
 
@@ -25,7 +25,7 @@ var main = {
     this.cursor = game.input.keyboard.createCursorKeys();
 
     // Create the player at the bottom of the screen
-    this.player = game.add.sprite(200, 400, 'player');
+    this.player = game.add.sprite(0, 0, 'player');
 
     // Enable the physics system for the player
     game.physics.arcade.enable(this.player);
@@ -36,24 +36,24 @@ var main = {
     //set/create this property
     this.player.isMoving = false;
 
-    // Create a group that will contain all the bricks
-    this.bricks = game.add.group();
-    this.bricks.enableBody = true;
+    // Create a group that will contain all the targets
+    this.targets = game.add.group();
+    this.targets.enableBody = true;
 
-    // Create 16 bricks
+    // Create 16 targets
     //for (var i = 0; i < 5; i++)
     //  for (var j = 0; j < 5; j++)
-    //    game.add.sprite(0 + (i * 60), 0 + (j * 35), 'brick', 0, this.bricks);
+    //    game.add.sprite(0 + (i * 60), 0 + (j * 35), 'target', 0, this.targets);
 
     //create a single brick
     game.add.sprite(
-      this.tileSize * this.tilesWide / 2, 
-      this.tileSize * this.tilesHigh / 2, 
-      'brick', 0, this.bricks);
+      this.tileSize * 5, 
+      this.tileSize * 5, 
+      'target', 0, this.targets);
 
-    // Make sure that the bricks won't move
-    //this.bricks.setAll('body.immovable', true);
-    this.bricks.setAll('body.collideWorldBounds', true);
+    // Make sure that the targets won't move
+    //this.targets.setAll('body.immovable', true);
+    this.targets.setAll('body.collideWorldBounds', true);
 
 
   },
@@ -91,10 +91,10 @@ var main = {
 
 
     //detect player touching bricks
-    game.physics.arcade.collide(this.player, this.bricks, this.hit, null, this);
+    game.physics.arcade.collide(this.player, this.targets, this.hit, null, this);
 
     //bricks bounch of each other
-    game.physics.arcade.collide(this.bricks, this.bricks, null, null, this);
+    game.physics.arcade.collide(this.bricks, this.targets, null, null, this);
   },
 
   render: function(){
@@ -136,7 +136,7 @@ var main = {
 };
 
 // Initialize Phaser, and start our 'main' state 
-var game = new Phaser.Game(640, 640, Phaser.AUTO, 'gameDiv');
+var game = new Phaser.Game(320, 320, Phaser.AUTO, 'gameDiv');
 game.state.add('main', main);
 game.state.start('main');
 
