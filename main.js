@@ -158,7 +158,7 @@ var main = {
       this.player.body.velocity.y = 0;
       this.player.body.y = this.player.waypoint.y;
       this.player.isMoving = false;
-      console.log("reached destination y");
+      //console.log("reached destination y");
     };
 
 
@@ -209,7 +209,11 @@ var main = {
 
     return;
 
-    
+
+    ///////////////////////////////////////////////////////////////////
+    /////OLD positioning code worked nice, but no more collisions...
+    ///////////////////////////////////////////////////////////////////
+
     
     this.player.isMoving = true;
     
