@@ -12,6 +12,7 @@ var main = {
 
     game.load.image('player', 'assets/player.png');
     game.load.image('target', 'assets/target.png');
+    game.load.image('goal', 'assets/goal.png');
 
   },
 
@@ -24,8 +25,17 @@ var main = {
         // Create a variable to handle the arrow keys
     this.cursor = game.input.keyboard.createCursorKeys();
 
-    // Create the player at the bottom of the screen
-    this.player = game.add.sprite(0, 0, 'player');
+    // Create the player
+    this.player = game.add.sprite(
+      this.boardGrid(1), 
+      this.boardGrid(1), 
+      'player');
+
+    // Create the goal 
+    this.goal = game.add.sprite(
+      this.boardGrid(7), 
+      this.boardGrid(1),
+      'goal');
 
     // Enable the physics system for the player
     game.physics.arcade.enable(this.player);
@@ -45,10 +55,10 @@ var main = {
     //  for (var j = 0; j < 5; j++)
     //    game.add.sprite(0 + (i * 60), 0 + (j * 35), 'target', 0, this.targets);
 
-    //create a single brick
+    //create a single target
     game.add.sprite(
-      this.tileSize * 5, 
-      this.tileSize * 5, 
+      this.boardGrid(4), 
+      this.boardGrid(1), 
       'target', 0, this.targets);
 
     // Make sure that the targets won't move
@@ -100,12 +110,17 @@ var main = {
   render: function(){
   },
 
-  hit: function(player, brick) {
-    // When the player hits a brick, kill the brick
+  hit: function(player, target) {
+    // When the player hits a target, kill the target
     //
-    //brick.kill();
+    //target.kill();
 
     //update the score, etc..
+  },
+
+  boardGrid: function(tile)
+  {
+    return tile * this.tileSize;
   },
 
   movePlayer: function(x, y){
